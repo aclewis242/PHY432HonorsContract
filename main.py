@@ -23,6 +23,11 @@ def genRandAngle(l, thetas=np.linspace(0, np.pi, 1000)): # Generates and returns
 def ELconv(le): # Converts between energy and wavelength.
     return H*C/le
 
+def linReg(ts, es):
+    thetas_p = 1 - np.cos(ts)
+    energies_p = 1/es
+    return np.polyfit(thetas_p, energies_p, 1), thetas_p, energies_p
+
 if __name__ == "__main__":
     e = 0.6617e6 # Energy of gamma particles produced by cesium-137 decay
     l = ELconv(e)
@@ -36,8 +41,12 @@ if __name__ == "__main__":
         st = angInd - angInd%binSize
         st = st[0]
         intens[st:st + binSize] += 1
+    es = ELconv(compton(l, thetas))*1e-6
+    lr, ts_p, es_p = linReg(thetas, es)
+    lr_line = lr[0]*ts_p + lr[1]
+    mOfE = 1/lr[0]
     
-    plt.plot(thetas, ELconv(compton(l, thetas))*1e-6)
+    plt.plot(thetas, es)
     plt.ylabel(r"Photon energy $E$ (MeV)")
     plt.xlabel(r"Angle $\theta$ (rad)")
     plt.title("Post-collision photon energy as a function of Compton scattering angle")
@@ -49,4 +58,10 @@ if __name__ == "__main__":
     plt.title("Post-scattering intensity as a function of Compton scattering angle")
     plt.show()
 
-    # Perhaps also produce graphs for 10, 20, ..., 90 degree angles with intensity vs. energy (i.e. like with the lab)?
+    plt.scatter(ts_p, es_p)
+    plt.plot(ts_p, lr_line, label='Electron mass: {:.4f} MeV/c$^2$'.format(mOfE))
+    plt.ylabel(r"$\frac{1}{E}$ ($E$: scattered photon energy, MeV)")
+    plt.xlabel(r"$1 - \cos(\theta)$ ($\theta$: scattering angle, rad)")
+    plt.title("Mass of electron from data")
+    plt.legend()
+    plt.show()
