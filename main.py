@@ -33,7 +33,7 @@ if __name__ == "__main__":
     Ba = (0.3560, "Ba-133") # " "   " " ...produced by barium-133 decay (MeV)
 
     ### CHANGE THESE LINES TO CHANGE PARAMETERS
-    eTup = Cs           # Source material
+    eTup = Ba           # Source material
     photonCount = 10000 # Number of photons
     binSize = 6         # Size of angle bin (for intensity)
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     plt.plot(thetas, es)
     plt.ylabel("Photon energy $E$ (MeV)")
     plt.xlabel(r"Angle $\theta$ (rad)")
-    plt.title("Post-collision photon energy as a function of Compton scattering angle ({})".format(eTup[1]))
+    # plt.title("Post-collision photon energy by Compton scattering angle ({})".format(eTup[1]))
     plt.savefig("photonEnergy_{}.png".format(eTup[1]))
     plt.show()
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     plt.scatter(thetas, intens)
     plt.ylabel("Intensity (# photons)")
     plt.xlabel(r"Angle $\theta$ (rad)")
-    plt.title("Post-scattering intensity as a function of Compton scattering angle ({})".format(eTup[1]))
+    # plt.title("Post-scattering intensity by Compton scattering angle ({})".format(eTup[1]))
     plt.savefig("photonIntensity_{}.png".format(eTup[1]))
     plt.show()
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     plt.plot(ts_p, lr_line, label='Electron mass: {:.4f} MeV/c$^2$'.format(mOfE))
     plt.ylabel(r"$\frac{1}{E}$ ($E$: scattered photon energy, MeV)")
     plt.xlabel(r"$1 - \cos(\theta)$ ($\theta$: scattering angle, rad)")
-    plt.title("Mass of electron from data ({})".format(eTup[1]))
+    # plt.title("Mass of electron from data ({})".format(eTup[1]))
     plt.legend()
     plt.savefig("electronMass_{}.png".format(eTup[1]))
     plt.show()
