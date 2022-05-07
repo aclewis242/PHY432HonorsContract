@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from sklearn.metrics import r2_score as r2
 
 L = 2.43e-12  # Compton wavelength of electron (in m)
 A = 1/137.04  # Fine structure constant
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     Ba = (0.3560, "Ba-133") # " "   " " ...produced by barium-133 decay (MeV)
 
     ### CHANGE THESE LINES TO CHANGE PARAMETERS
-    eTup = Ba           # Source material
+    eTup = Cs           # Source material
     photonCount = 10000 # Number of photons
     binSize = 6         # Size of angle bin (for intensity)
 
@@ -56,32 +57,42 @@ if __name__ == "__main__":
     plt.plot(thetas, es)
     plt.ylabel("Photon energy $E$ (MeV)")
     plt.xlabel(r"Angle $\theta$ (rad)")
-    # plt.title("Post-collision photon energy by Compton scattering angle ({})".format(eTup[1]))
     plt.savefig("photonEnergy_{}.png".format(eTup[1]))
     plt.show()
 
     # INTENSITY VS ANGLE
-    plt.scatter(thetas, intens)
-    plt.ylabel("Intensity (# photons)")
-    plt.xlabel(r"Angle $\theta$ (rad)")
-    # plt.title("Post-scattering intensity by Compton scattering angle ({})".format(eTup[1]))
+    fig, ax1 = plt.subplots()
+    ax1.scatter(thetas, intens, label='Photon intensities')
+    ax1.set_ylabel("Intensity (# photons)")
+    ax1.set_xlabel(r"Angle $\theta$ (rad)")
+    ax1.set_ylim(ymin=0)
+    ax2 = ax1.twinx()
+    probsNoNorm = pdf(l, thetas)
+    probs = probsNoNorm/np.linalg.norm(probsNoNorm)
+    rsq = r2(intens/np.linalg.norm(intens), probs)
+    ax2.plot(thetas, probs, color='r', label='Klein-Nishina formula ($R^2$: {:.4f})'.format(rsq))
+    ax2.set_ylabel("Probability")
+    ax2.set_ylim(ymin=0)
+    plt.legend()
     plt.savefig("photonIntensity_{}.png".format(eTup[1]))
     plt.show()
 
     ### This section has been deprecated -- there seemed to be some sort of correlation between energy & intensity when intensity was scaled
-    ### logarithmically, but after a few trials with different parameter values, I concluded that the two just happened to look similar in
-    ### this case
-    # ENERGY, INTENSITY OVERLAY
+    ### logarithmically, but after a few trials with different parameter values and scaling, I concluded that the two just happened to look
+    ### similar in this case
+    ### ENERGY, INTENSITY OVERLAY
     # fig, ax1 = plt.subplots()
     # ax1.scatter(thetas, intens)
     # ax1.set_ylabel("Intensity (# photons)")
     # ax1.set_yscale('log')
+    # ax1.set_ylim(ymin=0)
     # ax2 = ax1.twinx()
     # ax2.plot(thetas, es, color='r')
     # ax2.set_ylabel("Photon energy $E$ (MeV)")
     # ax2.set_xlabel(r"Angle $\theta$ (rad)")
-    # plt.title("Energy, intensity overlaid")
-    # plt.savefig("energyIntensity.png")
+    # ax2.set_ylim(ymin=0)
+    # # plt.title("Energy, intensity overlaid")
+    # plt.savefig("energyIntensity_{}.png".format(eTup[1]))
     # plt.show()
 
     # ELECTRON MASS LINEAR REGRESSION
@@ -89,7 +100,6 @@ if __name__ == "__main__":
     plt.plot(ts_p, lr_line, label='Electron mass: {:.4f} MeV/c$^2$'.format(mOfE))
     plt.ylabel(r"$\frac{1}{E}$ ($E$: scattered photon energy, MeV)")
     plt.xlabel(r"$1 - \cos(\theta)$ ($\theta$: scattering angle, rad)")
-    # plt.title("Mass of electron from data ({})".format(eTup[1]))
     plt.legend()
     plt.savefig("electronMass_{}.png".format(eTup[1]))
     plt.show()
